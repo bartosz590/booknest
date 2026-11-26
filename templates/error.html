@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block title %}Błąd {{ kod }}{% endblock %}
+{% block content %}
+<h1>Błąd {{ kod }}</h1>
+<p class="lead">{{ opis }}</p>
+<a class="btn" href="{{ url_for('dashboard') }}">Wróć do panelu</a>
+{% endblock %}

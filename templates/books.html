@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Książki{% endblock %}
+{% block content %}
+<div class="pagehead">
+  <div><h1>Książki</h1><p class="lead" style="margin:0">Katalog księgozbioru – wyszukiwanie, edycja i usuwanie pozycji.</p></div>
+  <a class="btn" href="{{ url_for('book_new') }}">Dodaj książkę</a>
+</div>
+<form class="filters" method="get" role="search">
+  <input type="search" name="q" value="{{ q }}" placeholder="Szukaj po tytule, autorze lub ISBN" aria-label="Szukaj">
+  <select name="status" aria-label="Status">
+    <option value="">Wszystkie statusy</option>
+    <option value="Dostępna" {{ 'selected' if status == 'Dostępna' }}>Dostępne</option>
+    <option value="Wypożyczona" {{ 'selected' if status == 'Wypożyczona' }}>Wypożyczone</option>
+  </select>
+  <button class="btn ghost" type="submit">Filtruj</button>
+</form>
+<div class="table-wrap"><table>
+  <thead><tr><th class="num">ID</th><th>Tytuł</th><th>Autor</th><th>ISBN</th><th class="num">Rok</th><th>Status</th><th>Akcje</th></tr></thead>
+  <tbody>
+  {% for k in ksiazki %}
+    <tr>
+      <td class="num">{{ k.id_ksiazki }}</td><td>{{ k.tytul }}</td><td>{{ k.autor }}</td>
+      <td>{{ k.isbn or '—' }}</td><td class="num">{{ k.rok_wydania or '—' }}</td>
+      <td><span class="badge {{ 'ok' if k.status == 'Dostępna' else 'out' }}">{{ k.status }}</span></td>
+      <td><div class="actions">
+        {% if k.status == 'Dostępna' %}<a class="btn small ghost" href="{{ url_for('loan_new', ksiazka=k.id_ksiazki) }}">Wypożycz</a>{% endif %}
+        <a class="btn small ghost" href="{{ url_for('book_edit', book_id=k.id_ksiazki) }}">Edytuj</a>
+        <form method="post" action="{{ url_for('book_delete', book_id=k.id_ksiazki) }}" onsubmit="return confirm('Usunąć wybraną książkę z katalogu?');">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+          <button class="btn small danger" type="submit">Usuń</button>
+        </form>
+      </div></td>
+    </tr>
+  {% else %}
+    <tr><td colspan="7" class="empty">{% if q or status %}Brak książek spełniających kryteria.{% else %}Katalog jest pusty. Dodaj pierwszą pozycję.{% endif %}</td></tr>
+  {% endfor %}
+  </tbody></table></div>
+<p class="muted">Liczba pozycji: {{ ksiazki|length }}</p>
+{% endblock %}

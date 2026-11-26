@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Panel{% endblock %} – BookNest</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  {% set ep = request.endpoint or '' %}
+  <header class="topbar">
+    <div class="topbar-in">
+      <a class="brand" href="{{ url_for('dashboard') }}">BookNest<small>domowa biblioteka</small></a>
+      <nav aria-label="Menu główne">
+        <a href="{{ url_for('dashboard') }}" {% if ep == 'dashboard' %}aria-current="page"{% endif %}>Panel</a>
+        <a href="{{ url_for('books') }}" {% if ep.startswith('book') %}aria-current="page"{% endif %}>Książki</a>
+        <a href="{{ url_for('readers') }}" {% if ep.startswith('reader') %}aria-current="page"{% endif %}>Czytelnicy</a>
+        <a href="{{ url_for('loans') }}" {% if ep.startswith('loan') %}aria-current="page"{% endif %}>Wypożyczenia</a>
+        <a href="{{ url_for('backup') }}" {% if ep.startswith('backup') %}aria-current="page"{% endif %}>Kopia zapasowa</a>
+      </nav>
+    </div>
+  </header>
+  <main>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, message in messages %}
+        <div class="flash {{ category }}" role="{{ 'alert' if category == 'danger' else 'status' }}">{{ message }}</div>
+      {% endfor %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </main>
+  <footer>BookNest – projekt zaliczeniowy: Python 3, Flask, SQLite 3.</footer>
+</body>
+</html>

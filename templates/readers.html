@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Czytelnicy{% endblock %}
+{% block content %}
+<div class="pagehead">
+  <div><h1>Czytelnicy</h1><p class="lead" style="margin:0">Znajomi i domownicy, którym pożyczasz książki.</p></div>
+  <a class="btn" href="{{ url_for('reader_new') }}">Dodaj czytelnika</a>
+</div>
+<div class="table-wrap"><table>
+  <thead><tr><th class="num">ID</th><th>Imię i nazwisko</th><th>E-mail</th><th>Telefon</th><th class="num">Aktywne</th><th class="num">Łącznie</th><th>Akcje</th></tr></thead>
+  <tbody>
+  {% for c in czytelnicy %}
+    <tr>
+      <td class="num">{{ c.id_czytelnika }}</td><td>{{ c.imie }} {{ c.nazwisko }}</td><td>{{ c.email or '—' }}</td><td>{{ c.telefon or '—' }}</td>
+      <td class="num">{{ c.aktywne }}</td><td class="num">{{ c.razem }}</td>
+      <td><div class="actions">
+        <a class="btn small ghost" href="{{ url_for('reader_edit', reader_id=c.id_czytelnika) }}">Edytuj</a>
+        <form method="post" action="{{ url_for('reader_delete', reader_id=c.id_czytelnika) }}" onsubmit="return confirm('Usunąć czytelnika?');">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+          <button class="btn small danger" type="submit">Usuń</button>
+        </form>
+      </div></td>
+    </tr>
+  {% else %}
+    <tr><td colspan="7" class="empty">Nie zarejestrowano jeszcze żadnego czytelnika.</td></tr>
+  {% endfor %}
+  </tbody></table></div>
+{% endblock %}

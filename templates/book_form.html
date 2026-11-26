@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Edycja książki' if edit else 'Nowa książka' }}{% endblock %}
+{% block content %}
+<h1>{{ 'Edycja książki' if edit else 'Nowa książka' }}</h1>
+<p class="lead">Pola oznaczone gwiazdką są wymagane. ISBN można wpisać z myślnikami – zostanie sprawdzona cyfra kontrolna.</p>
+<form class="card" method="post" novalidate>
+  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+  <div class="field"><label for="tytul">Tytuł *</label><input type="text" id="tytul" name="tytul" value="{{ form.tytul }}" maxlength="150" required></div>
+  <div class="field"><label for="autor">Autor *</label><input type="text" id="autor" name="autor" value="{{ form.autor }}" maxlength="100" required></div>
+  <div class="row2">
+    <div class="field"><label for="isbn">ISBN</label><input type="text" id="isbn" name="isbn" value="{{ form.isbn }}" placeholder="np. 978-83-7578-063-5"><div class="hint">ISBN-10 lub ISBN-13</div></div>
+    <div class="field"><label for="rok">Rok wydania</label><input type="text" inputmode="numeric" id="rok" name="rok_wydania" value="{{ form.rok_wydania }}" placeholder="np. 2008"></div>
+  </div>
+  {% if edit %}<p class="muted">Status: <span class="badge {{ 'ok' if book.status == 'Dostępna' else 'out' }}">{{ book.status }}</span> (zmienia się automatycznie przez wypożyczenia i zwroty)</p>{% endif %}
+  <div class="actions"><button class="btn" type="submit">Zapisz</button><a class="btn ghost" href="{{ url_for('books') }}">Anuluj</a></div>
+</form>
+{% endblock %}

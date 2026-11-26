@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Kopia zapasowa{% endblock %}
+{% block content %}
+<h1>Kopia zapasowa</h1>
+<p class="lead">Dane biblioteki można zapisać do pliku JSON i w razie potrzeby przywrócić.</p>
+<section class="panel">
+  <h2>Eksport</h2>
+  <p>Pobierz plik z wszystkimi książkami, czytelnikami i historią wypożyczeń.</p>
+  <a class="btn" href="{{ url_for('backup_export') }}">Pobierz kopię (JSON)</a>
+</section>
+<section class="panel">
+  <h2>Import</h2>
+  <p><strong>Uwaga:</strong> import zastępuje wszystkie obecne dane zawartością pliku. Jeśli plik jest błędny, nic nie zostanie zmienione.</p>
+  <form method="post" action="{{ url_for('backup_import') }}" enctype="multipart/form-data" onsubmit="return confirm('Zastąpić wszystkie dane zawartością pliku?');">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <div class="field"><label for="plik">Plik kopii (.json)</label><input type="file" id="plik" name="plik" accept=".json,application/json" required></div>
+    <button class="btn danger" type="submit">Przywróć z pliku</button>
+  </form>
+</section>
+{% endblock %}

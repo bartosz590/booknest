@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Nowe wypożyczenie{% endblock %}
+{% block content %}
+<h1>Nowe wypożyczenie</h1>
+<p class="lead">Na liście są tylko książki aktualnie dostępne na półce. Domyślny termin zwrotu to 30 dni.</p>
+<form class="card" method="post" novalidate>
+  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+  <div class="field"><label for="id_ksiazki">Książka *</label>
+    <select id="id_ksiazki" name="id_ksiazki" required>
+      <option value="">— wybierz książkę —</option>
+      {% for k in dostepne %}<option value="{{ k.id_ksiazki }}" {{ 'selected' if form.id_ksiazki|string == k.id_ksiazki|string }}>{{ k.tytul }} ({{ k.autor }})</option>{% endfor %}
+    </select></div>
+  <div class="field"><label for="id_czytelnika">Czytelnik *</label>
+    <select id="id_czytelnika" name="id_czytelnika" required>
+      <option value="">— wybierz osobę —</option>
+      {% for c in czytelnicy %}<option value="{{ c.id_czytelnika }}" {{ 'selected' if form.id_czytelnika|string == c.id_czytelnika|string }}>{{ c.imie }} {{ c.nazwisko }}</option>{% endfor %}
+    </select></div>
+  <div class="field"><label for="termin">Termin zwrotu *</label><input type="date" id="termin" name="termin_zwrotu" value="{{ form.termin_zwrotu }}" min="{{ dzis }}" required></div>
+  <div class="actions"><button class="btn" type="submit">Zatwierdź wypożyczenie</button><a class="btn ghost" href="{{ url_for('loans') }}">Anuluj</a></div>
+</form>
+{% endblock %}

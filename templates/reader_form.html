@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Edycja czytelnika' if edit else 'Nowy czytelnik' }}{% endblock %}
+{% block content %}
+<h1>{{ 'Edycja czytelnika' if edit else 'Nowy czytelnik' }}</h1>
+<p class="lead">Adres e-mail musi być unikalny – dzięki temu nie zdublujesz tej samej osoby.</p>
+<form class="card" method="post" novalidate>
+  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+  <div class="row2">
+    <div class="field"><label for="imie">Imię *</label><input type="text" id="imie" name="imie" value="{{ form.imie }}" maxlength="50" required></div>
+    <div class="field"><label for="nazwisko">Nazwisko *</label><input type="text" id="nazwisko" name="nazwisko" value="{{ form.nazwisko }}" maxlength="50" required></div>
+  </div>
+  <div class="field"><label for="email">E-mail</label><input type="email" id="email" name="email" value="{{ form.email }}" placeholder="jan@example.pl"></div>
+  <div class="field"><label for="telefon">Telefon</label><input type="tel" id="telefon" name="telefon" value="{{ form.telefon }}" placeholder="+48 600 100 200"></div>
+  <div class="actions"><button class="btn" type="submit">Zapisz</button><a class="btn ghost" href="{{ url_for('readers') }}">Anuluj</a></div>
+</form>
+{% endblock %}

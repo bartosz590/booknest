@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Wypożyczenia{% endblock %}
+{% block content %}
+<div class="pagehead">
+  <div><h1>Wypożyczenia</h1><p class="lead" style="margin:0">Rejestr tego, co i komu pożyczono – wraz z terminami zwrotu.</p></div>
+  <a class="btn" href="{{ url_for('loan_new') }}">Nowe wypożyczenie</a>
+</div>
+<div class="tabs">
+  <a href="{{ url_for('loans', widok='aktywne') }}" {% if widok != 'historia' %}aria-current="page"{% endif %}>Aktywne</a>
+  <a href="{{ url_for('loans', widok='historia') }}" {% if widok == 'historia' %}aria-current="page"{% endif %}>Pełna historia</a>
+</div>
+<div class="table-wrap"><table>
+  <thead><tr><th>Książka</th><th>Czytelnik</th><th>Wypożyczono</th><th>Termin zwrotu</th><th>Zwrócono</th><th>Stan</th><th></th></tr></thead>
+  <tbody>
+  {% for w in wypozyczenia %}
+    <tr class="{{ 'late' if w.po_terminie }}">
+      <td>{{ w.tytul }}<div class="muted" style="font-size:.85rem">{{ w.autor }}</div></td>
+      <td>{{ w.imie }} {{ w.nazwisko }}</td>
+      <td>{{ w.data_wypozyczenia|data }}</td><td>{{ w.termin_zwrotu|data }}</td><td>{{ w.data_zwrotu|data }}</td>
+      <td>{% if w.data_zwrotu %}<span class="badge done">zwrócona</span>{% elif w.po_terminie %}<span class="badge late">po terminie</span>{% else %}<span class="badge out">wypożyczona</span>{% endif %}</td>
+      <td>{% if not w.data_zwrotu %}
+        <form method="post" action="{{ url_for('loan_return', loan_id=w.id_wypozyczenia) }}" style="margin:0">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+          <input type="hidden" name="next" value="{{ url_for('loans', widok=widok) }}">
+          <button class="btn small" type="submit">Odnotuj zwrot</button>
+        </form>{% endif %}</td>
+    </tr>
+  {% else %}
+    <tr><td colspan="7" class="empty">{% if widok == 'historia' %}Historia jest pusta.{% else %}Brak aktywnych wypożyczeń.{% endif %}</td></tr>
+  {% endfor %}
+  </tbody></table></div>
+{% endblock %}

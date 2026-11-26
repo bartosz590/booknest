@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Panel{% endblock %}
+{% block content %}
+<h1>Twoja biblioteka</h1>
+<p class="lead">Stan księgozbioru na dziś: co stoi na półce, co jest wypożyczone i komu trzeba przypomnieć o zwrocie.</p>
+
+<div class="stats">
+  <div class="stat"><b>{{ s.ksiazki }}</b><span>książek w katalogu</span></div>
+  <div class="stat"><b>{{ s.dostepne }}</b><span>dostępnych na półce</span></div>
+  <div class="stat"><b>{{ s.wypozyczone }}</b><span>wypożyczonych</span></div>
+  <div class="stat {{ 'warn' if s.po_terminie }}"><b>{{ s.po_terminie }}</b><span>po terminie zwrotu</span></div>
+</div>
+
+<h2>Półka</h2>
+<div class="shelf-wrap">
+  <div class="shelf">
+    {% set colors = ['#2f5d50', '#7a2e3a', '#28486b', '#9a7420', '#5b4b7a', '#3f4750'] %}
+    {% for b in polka %}
+      <a class="spine {{ 'out' if b.status == 'Wypożyczona' }}"
+         href="{{ url_for('book_edit', book_id=b.id_ksiazki) }}"
+         title="{{ b.tytul }} – {{ b.autor }} ({{ b.status }})"
+         style="height: {{ 120 + (b.id_ksiazki * 37) % 56 }}px; width: {{ 30 + (b.id_ksiazki * 13) % 14 }}px; background: {{ colors[b.id_ksiazki % 6] }};"><span>{{ b.tytul }}</span></a>
+    {% else %}
+      <p class="muted" style="margin: 60px auto;">Półka jest pusta. <a href="{{ url_for('book_new') }}">Dodaj pierwszą książkę.</a></p>
+    {% endfor %}
+  </div>
+  <div class="board"></div>
+</div>
+<div class="legend"><span><i></i>stoi na półce</span><span><i class="out"></i>wypożyczona (wyjęta z półki)</span></div>
+
+<div class="cols">
+  <section>
+    <h2>Najbliższe zwroty</h2>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Książka</th><th>Czytelnik</th><th>Termin</th></tr></thead>
+      <tbody>
+      {% for w in aktywne %}
+        <tr class="{{ 'late' if w.po_terminie }}"><td>{{ w.tytul }}</td><td>{{ w.imie }} {{ w.nazwisko }}</td>
+          <td>{{ w.termin_zwrotu|data }}{% if w.po_terminie %} <span class="badge late">po terminie</span>{% endif %}</td></tr>
+      {% else %}
+        <tr><td colspan="3" class="empty">Brak aktywnych wypożyczeń.</td></tr>
+      {% endfor %}
+      </tbody></table></div>
+    <p><a href="{{ url_for('loan_new') }}" class="btn">Nowe wypożyczenie</a></p>
+  </section>
+  <section>
+    <h2>Statystyki czytelnicze</h2>
+    {% if s.top_ksiazki %}
+      <p class="muted" style="margin:0 0 6px">Najczęściej wypożyczane książki</p>
+      <ol class="rank">{% for k in s.top_ksiazki %}<li>{{ k.tytul }} <span class="n">{{ k.n }}×</span></li>{% endfor %}</ol>
+      <p class="muted" style="margin:16px 0 6px">Najaktywniejsi czytelnicy</p>
+      <ol class="rank">{% for c in s.top_czytelnicy %}<li>{{ c.osoba }} <span class="n">{{ c.n }}×</span></li>{% endfor %}</ol>
+    {% else %}
+      <p class="muted">Statystyki pojawią się po pierwszym wypożyczeniu.</p>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}
